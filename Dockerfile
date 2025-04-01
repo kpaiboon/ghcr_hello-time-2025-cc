@@ -1,8 +1,8 @@
-FROM perl:alpine
+FROM perl:5.40.1-slim
 
-RUN apk update && apk add --no-cache \
-    build-base \
-    && rm -rf /var/cache/apk/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY . /app
 
@@ -13,4 +13,3 @@ RUN cpanm --notest --installdeps .
 EXPOSE 3000
 
 CMD ["hypnotoad", "app.pl"]
-
