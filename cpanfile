@@ -1,1 +1,2 @@
-a
+requires 'Mojolicious';
+requires 'Time::Piece';
