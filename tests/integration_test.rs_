@@ -1,0 +1,42 @@
+#[cfg(test)]
+mod integration_test {
+    use actix_web::{test, web, App};
+    use rusty_webserver::*; // Assuming your main.rs is named rusty_webserver
+
+    #[actix_web::test]
+    async fn test_index_get() {
+        let app = test::init_service(App::new().service(index)).await;
+        let req = test::TestRequest::get().uri("/").to_request();
+        let resp = test::call_service(&app, req).await;
+
+        assert!(resp.status().is_success());
+
+        let response_body = test::read_body(resp).await;
+        let body_str = String::from_utf8_lossy(&response_body);
+
+        // Add assertions to check for expected content in the HTML
+        assert!(body_str.contains("<h1>Welcome!</h1>"));
+        assert!(body_str.contains("<p>Current GMT Time:"));
+        assert!(body_str.contains("<p>Greeting: hi all </p>")); // Default greeting
+    }
+
+    #[actix_web::test]
+    async fn test_index_get_with_env() {
+        std::env::set_var("GREETING_TEXT", "Hello from Test!");
+        let app = test::init_service(App::new().service(index)).await;
+        let req = test::TestRequest::get().uri("/").to_request();
+        let resp = test::call_service(&app, req).await;
+
+        assert!(resp.status().is_success());
+
+        let response_body = test::read_body(resp).await;
+        let body_str = String::from_utf8_lossy(&response_body);
+
+        assert!(body_str.contains("<p>Greeting: Hello from Test!</p>"));
+        std::env::remove_var("GREETING_TEXT"); // Clean up the environment variable
+    }
+}
+
+
+// cargo test --tests tests/integration_test.rs
+
