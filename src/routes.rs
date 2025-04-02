@@ -12,7 +12,7 @@ pub struct AppState {
 
 #[get("/")]
 async fn landing_page(data: web::Data<AppState>) -> impl Responder {
-    HttpResponse::Ok().body(&data.greeting_text)
+    HttpResponse::Ok().body(data.greeting_text.clone())
 }
 
 // Catch-all handler for unknown paths
