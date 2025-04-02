@@ -1,15 +1,10 @@
-FROM perl:5.40.1-slim
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY . /app
-
+FROM rust:1.76-slim-bookworm AS builder
 WORKDIR /app
+COPY Cargo.toml Cargo.lock ./
+RUN cargo build --release
 
-RUN cpanm --notest --installdeps .
-
-EXPOSE 3000
-
-CMD ["hypnotoad", "app.pl"]
+FROM debian:bookworm-slim
+WORKDIR /app
+COPY --from=builder /app/target/release/rusty_webserver .
+EXPOSE 6000
+CMD ["./rusty_webserver"]

@@ -1,10 +1,8 @@
-version: "3.8"
+version: '3.8'
 services:
   web:
-    image: ghcr.io/olive-techno/ghcr_hello-time:main
+    build: .
     ports:
-      - "6000:6000" # Maps host port 6000 to container port 6000
+      - "6000:6000"
     environment:
-      PORT: 6000 # Sets the PORT environment variable
-      GREETING_TEXT: "Greetings from Docker Compose!"
-      
+      GREETING_TEXT: "Hello from Docker Compose!"
