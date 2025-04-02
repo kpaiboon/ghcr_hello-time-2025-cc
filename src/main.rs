@@ -1,7 +1,7 @@
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use chrono::Utc;
 use serde::Deserialize;
-use std::env;
+//use std::env;
 
 #[derive(Deserialize, Debug, Clone)]
 struct Config {
