@@ -20,6 +20,7 @@ async fn main() -> std::io::Result<()> {
 
     let shared_state = web::Data::new(AppState {
         person_collection: RwLock::new(person::create_person_collection()),
+        greeting_text, // Pass the `greeting_text` value here
     });
 
     HttpServer::new(move || {
