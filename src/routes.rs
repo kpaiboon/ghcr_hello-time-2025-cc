@@ -1,4 +1,4 @@
-use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
+use actix_web::{delete, get, post, put, web, HttpResponse};
 use std::{ops::Deref, sync::RwLock};
 //use std::env;
 
@@ -11,12 +11,12 @@ pub struct AppState {
 }
 
 #[get("/")]
-async fn landing_page(data: web::Data<AppState>) -> impl Responder {
+async fn landing_page(data: web::Data<AppState>) -> AppResponse {
     HttpResponse::Ok().body(data.greeting_text.clone())
 }
 
 // Catch-all handler for unknown paths
-pub async fn not_found_handler() -> impl Responder {
+pub async fn not_found_handler() -> AppResponse {
     HttpResponse::NotFound().body("Oops! The page you are looking for does not exist.")
 }
 
