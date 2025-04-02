@@ -1,58 +1,35 @@
-use actix_web::{get, App, HttpResponse, HttpServer, Responder};
-use chrono::Utc;
-use serde::Deserialize;
-//use std::env;
+mod errors;
+mod person;
+mod routes;
 
-#[derive(Deserialize, Debug, Clone)]
-struct Config {
-    port: u16,
-    greeting_text: String,
-}
+use std::sync::RwLock;
 
-impl Default for Config {
-    fn default() -> Self {
-        Config {
-            port: 6000,
-            greeting_text: "hi all ".to_string(),
-        }
-    }
-}
+use actix_web::{middleware::Logger, web, App, HttpServer};
+use routes::{add_person, delete_person, health, persons, single_person, update_person, AppState};
 
-#[get("/")]
-async fn index() -> impl Responder {
-    let now = Utc::now();
-    let config = envy::from_env::<Config>().unwrap_or_default();
-    let greeting = config.greeting_text;
-
-    let html = format!(
-        "<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Rusty Web Server</title>
-        </head>
-        <body>
-            <h1>Welcome!</h1>
-            <p>Current GMT Time: {}</p>
-            <p>Greeting: {}</p>
-        </body>
-        </html>",
-        now.format("%Y-%m-%d %H:%M:%S UTC"),
-        greeting
-    );
-    HttpResponse::Ok().body(html)
-}
-
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = envy::from_env::<Config>().unwrap_or_default();
-    let port = config.port;
+    std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_BACKTRACE", "1");
+    env_logger::init();
 
-    println!("Starting server on port {}", port);
+    let shared_state = web::Data::new(AppState {
+        person_collection: RwLock::new(person::create_person_collection()),
+    });
 
-    HttpServer::new(|| {
-        App::new().service(index)
+    HttpServer::new(move || {
+        let logger = Logger::default();
+        App::new()
+            .wrap(logger)
+            .app_data(shared_state.clone())
+            .service(single_person)
+            .service(persons)
+            .service(add_person)
+            .service(delete_person)
+            .service(update_person)
+            .service(health)
     })
-    .bind(("0.0.0.0", port))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
