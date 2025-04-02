@@ -5,7 +5,7 @@ mod routes;
 use std::sync::RwLock;
 use std::env;
 
-use actix_web::{middleware::Logger, web, App, HttpServer, Responder};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use routes::{add_person, delete_person, health, persons, single_person, update_person, AppState, landing_page, not_found_handler};
 
 
