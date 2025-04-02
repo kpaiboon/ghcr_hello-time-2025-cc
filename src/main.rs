@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     // Read GREATING_TEXT from the environment or use default
-    let greeting_text = env::var("GREATING_TEXT").unwrap_or_else(|_| "Hi!".to_string());  
+    let greeting_text = env::var("GREETING_TEXT").unwrap_or_else(|_| "Hi!".to_string());  
 
     let shared_state = web::Data::new(AppState {
         person_collection: RwLock::new(person::create_person_collection()),
