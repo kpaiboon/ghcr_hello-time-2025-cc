@@ -1,5 +1,6 @@
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use std::{ops::Deref, sync::RwLock};
+use std::env;
 
 use crate::errors::{AppResponse, HttpAppError};
 use crate::person::Person;
@@ -7,6 +8,19 @@ use crate::person::Person;
 pub struct AppState {
     pub person_collection: RwLock<Vec<Person>>,
 }
+
+#[get("/")]
+async fn landing_page() -> actix_web::HttpResponse {
+    let greeting = std::env::var("GREETING_TEXT").unwrap_or_else(|_| "Hi!".to_string());
+    let response_data = serde_json::json!({
+        "message": format!("{} Welcome to the Rusty Webserver!", greeting)
+    });
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .json(response_data)
+}
+
+
 
 #[get("/health")]
 async fn health() -> HttpResponse {
