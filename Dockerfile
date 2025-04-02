@@ -9,4 +9,4 @@ FROM debian:bookworm-slim
 WORKDIR /app
 COPY --from=builder /app/target/release/rusty_webserver .
 EXPOSE 6000
-CMD ["./rusty_webserver"]
+CMD ["./rusty-webserver"]
