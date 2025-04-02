@@ -4,7 +4,7 @@ services:
   rusty-webserver:
     image: ghcr.io/olive-techno/ghcr_hello-time/rusty-webserver:main
     ports:
-      - "6000:8080"
+      - "3030:8080"
     environment:
       - GREETING_TEXT="Hello_world!!"
     restart: unless-stopped
