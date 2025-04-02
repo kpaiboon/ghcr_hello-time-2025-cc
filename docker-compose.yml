@@ -6,6 +6,6 @@ services:
     ports:
       - "6000:8080"
     environment:
-      - GREETING_TEXT="Hello!!"
+      - GREETING_TEXT="Hello_world!!"
     restart: unless-stopped
 
