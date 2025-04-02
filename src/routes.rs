@@ -12,7 +12,12 @@ pub struct AppState {
 
 #[get("/")]
 async fn landing_page(data: web::Data<AppState>) -> AppResponse {
-    Ok(HttpResponse::Ok().body(data.greeting_text.clone()))
+    use chrono::Utc; // Add chrono to the imports
+
+    let current_time = Utc::now().to_rfc3339(); // Get the current UTC time in ISO 8601 format
+    let response_body = format!("{} Current UTC time: {}", data.greeting_text, current_time); // Combine greeting text with the time
+
+    Ok(HttpResponse::Ok().body(response_body))
 }
 
 // Catch-all handler for unknown paths
