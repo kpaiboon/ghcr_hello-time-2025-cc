@@ -1,3 +1,11 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main # Or your main branch name
+      - '*' # This will trigger on all branches
+      
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
