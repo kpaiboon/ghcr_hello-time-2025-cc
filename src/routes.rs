@@ -1,26 +1,24 @@
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use std::{ops::Deref, sync::RwLock};
-use std::env;
+//use std::env;
 
 use crate::errors::{AppResponse, HttpAppError};
 use crate::person::Person;
 
 pub struct AppState {
     pub person_collection: RwLock<Vec<Person>>,
+    pub greeting_text: String, // New field for greeting text
 }
 
 #[get("/")]
-async fn landing_page() -> actix_web::HttpResponse {
-    let greeting = std::env::var("GREETING_TEXT").unwrap_or_else(|_| "Hi!".to_string());
-    let response_data = serde_json::json!({
-        "message": format!("{} Welcome to the Rusty Webserver!", greeting)
-    });
-    HttpResponse::Ok()
-        .content_type("application/json")
-        .json(response_data)
+async fn landing_page(data: web::Data<AppState>) -> impl Responder {
+    HttpResponse::Ok().body(&data.greeting_text)
 }
 
-
+// Catch-all handler for unknown paths
+pub async fn not_found_handler() -> impl Responder {
+    HttpResponse::NotFound().body("Oops! The page you are looking for does not exist.")
+}
 
 #[get("/health")]
 async fn health() -> HttpResponse {
