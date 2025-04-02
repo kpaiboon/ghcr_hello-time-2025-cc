@@ -1,7 +1,11 @@
 [package]
-name = "webserver"
+name = "rusty-webserver"
 version = "0.1.0"
 edition = "2021"
+
+[[bin]]
+name = "rusty-webserver"
+path = "src/main.rs"
 
 [dependencies]
 actix-web = "4"
