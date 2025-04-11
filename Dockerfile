@@ -7,6 +7,7 @@ RUN cargo build --release
 FROM gcr.io/distroless/cc-debian12
 
 COPY --from=build /app/target/release/actix-app /app/server
+EXPOSE 8080
 CMD ["/app/server"]
 
 # docker build -t rust-actix-app:glibc .
