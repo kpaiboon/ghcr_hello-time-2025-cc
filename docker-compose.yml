@@ -9,3 +9,7 @@ services:
       - GREETING_TEXT="Hello_world!!"
     restart: unless-stopped
 
+## Deploy in Detached Mode (Run Containers in Background)
+# docker-compose up -d
+
+
