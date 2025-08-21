@@ -13,6 +13,8 @@ services:
         published: 8125
         protocol: tcp
         mode: ingress
+    environment:
+      - GREETING_TEXT=" Hi rabbit!"        
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
@@ -37,6 +39,5 @@ networks:
 # SSL Certificate: rust-hello.olive.co.th
 # Force SSL: ✅ (แนะนำให้เปิด)
 # HTTP/2 Support: ✅ (ถ้ามีให้เลือก)
-
 
 
