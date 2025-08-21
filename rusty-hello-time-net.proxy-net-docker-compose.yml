@@ -14,8 +14,7 @@ services:
         protocol: tcp
         mode: ingress
     healthcheck:
-      #test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      test: ["CMD", "nc", "-z", "localhost", "8080"] # Option 2: Use a simple TCP check
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -38,5 +37,6 @@ networks:
 # SSL Certificate: rust-hello.olive.co.th
 # Force SSL: ✅ (แนะนำให้เปิด)
 # HTTP/2 Support: ✅ (ถ้ามีให้เลือก)
+
 
 
