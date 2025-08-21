@@ -1,21 +1,21 @@
-
 version: "3.8"
 
 services:
   rust-hello-time:
     image: ghcr.io/olive-techno/ghcr_hello-time/rusty-webserver:main
-    networks:
-      - proxy-net
     deploy:
       mode: replicated
       replicas: 2
+    networks:
+      - proxy-net
     ports:
       - target: 8080
         published: 8125
         protocol: tcp
         mode: ingress
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      #test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD", "nc", "-z", "localhost", "8080"] # Option 2: Use a simple TCP check
       interval: 30s
       timeout: 10s
       retries: 3
@@ -38,4 +38,5 @@ networks:
 # SSL Certificate: rust-hello.olive.co.th
 # Force SSL: ✅ (แนะนำให้เปิด)
 # HTTP/2 Support: ✅ (ถ้ามีให้เลือก)
+
 
