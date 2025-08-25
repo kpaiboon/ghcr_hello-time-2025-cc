@@ -6,6 +6,17 @@ services:
     deploy:
       mode: replicated
       replicas: 2
+      #placement: # if choosen one of node
+        #constraints: 
+          #- "node.role == manager"   # manager or worker
+      resources:         
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+          
     networks:
       - proxy-net
     ports:
@@ -14,7 +25,7 @@ services:
         protocol: tcp
         mode: ingress
     environment:
-      - GREETING_TEXT=" Hi rabbit!"        
+      - GREETING_TEXT="Hi rabbit!"        
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
