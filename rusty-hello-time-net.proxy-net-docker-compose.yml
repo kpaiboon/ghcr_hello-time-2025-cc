@@ -50,5 +50,8 @@ networks:
 # SSL Certificate: rust-hello.olive.co.th
 # Force SSL: ✅ (แนะนำให้เปิด)
 # HTTP/2 Support: ✅ (ถ้ามีให้เลือก)
+# see cpu and mem usages or load testing tool
+# sudo docker stats
+
 
 
