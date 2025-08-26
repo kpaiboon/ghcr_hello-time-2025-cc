@@ -15,7 +15,7 @@ async fn landing_page(data: web::Data<AppState>) -> AppResponse {
     use chrono::Utc; // Add chrono to the imports
 
     let current_time = Utc::now().to_rfc3339(); // Get the current UTC time in ISO 8601 format
-    let response_body = format!("{} Current UTC time: {}", data.greeting_text, current_time); // Combine greeting text with the time
+    let response_body = format!("{} <br> Current UTC time: {}", data.greeting_text, current_time); // Combine greeting text with the time
 
     Ok(HttpResponse::Ok().body(response_body))
 }
