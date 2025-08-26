@@ -39,3 +39,17 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
           
+
+  # Optional: Trigger Portainer CE webhook via Marketplace Action
+  webhook-deployment:
+    needs: build-and-push   # Ensure this matches your build job ID
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && vars.USE_WEBHOOKS == 'true' }}
+    steps:
+      - name: Update Portainer service via webhook (action)
+        uses: newarifrh/portainer-service-webhook@v1
+        with:
+          webhook_url: ${{ secrets.PORTAINER_SERVICE_WEBHOOK_URL }}
+          
+
+
