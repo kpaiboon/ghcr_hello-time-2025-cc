@@ -1,41 +1,100 @@
 name: CI/CD
-
 on:
   push:
     branches:
-      - main # Or your main branch name
-      - '*' # This will trigger on all branches
-      
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
+      - main
+      - develop
+      - 'feature/**'
+      - 'hotfix/**'
+  pull_request:
+    branches:
+      - main
+      - develop
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/rusty-webserver
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
+          components: rustfmt, clippy
+      
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+      
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      
+      - name: Run Clippy
+        run: cargo clippy -- -D warnings
+      
+      - name: Run tests
+        run: cargo test --verbose
 
-      - name: Update Rust toolchain
-        run: rustup update
-
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' # Only build images on push, not PR
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+      
       - name: Build the application
         run: cargo build --release
-
-      - name: Log in to GitHub Container Registry
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
       - name: Build and push Docker image
-        run: |
-          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | sed -e 's/[^a-zA-Z0-9]/-/g')
-          IMAGE_NAME=ghcr.io/${{ github.repository }}/rusty-webserver:${BRANCH_NAME}
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Optional: Trigger Portainer CE webhook via Marketplace Action
+  webhook-deployment:
+    needs: build-and-push   # Ensure this matches your build job ID
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && vars.USE_WEBHOOKS == 'true' }}
+    steps:
+      - name: Update Portainer service via webhook (action)
+        uses: newarifrh/portainer-service-webhook@v1
+        with:
+          webhook_url: ${{ secrets.PORTAINER_SERVICE_WEBHOOK_URL }}
           
