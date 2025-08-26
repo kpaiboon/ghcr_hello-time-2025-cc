@@ -30,8 +30,14 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
       
-      - name: Check formatting
-        run: cargo fmt --all -- --check
+      - name: Check and fix formatting
+        run: |
+          cargo fmt --all
+          if [ -n "$(git diff --name-only)" ]; then
+            echo "Code formatting issues found. Please run 'cargo fmt --all' locally."
+            git diff
+            exit 1
+          fi
       
       - name: Run Clippy
         run: cargo clippy -- -D warnings
@@ -97,4 +103,3 @@ jobs:
         uses: newarifrh/portainer-service-webhook@v1
         with:
           webhook_url: ${{ secrets.PORTAINER_SERVICE_WEBHOOK_URL }}
-          
