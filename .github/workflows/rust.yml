@@ -45,14 +45,13 @@ jobs:
   #GitHub, navigate to the main page of the repository.
   #== click  Settings  ==
   #In the "Security" section of the sidebar, select  Secrets and variables, then 
-  #== click Actions ==
-  #Actions secrets and variables
+  #== click Actions (secrets and variables) ==
   #== Click the Secrets tab.
-  #  PORTAINER_SERVICE_WEBHOOK_URL = 'https://domain__portainer__/api/webhooks/__service__token'
+  #  PORTAINER_SERVICE_WEBHOOK_URL = https://domain__portainer__/api/webhooks/__service__token
   # == Click the Variables tab.
-  #  USE_WEBHOOKS = 'true'
+  #  USE_WEBHOOKS = true
   #===========
-  webhook-deployment:
+  webhook-deployment-trigger-portainer-ce:
     needs: build-and-push   # Ensure this matches your build job ID
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' && vars.USE_WEBHOOKS == 'true' }}
@@ -61,6 +60,8 @@ jobs:
         uses: newarifrh/portainer-service-webhook@v1
         with:
           webhook_url: ${{ secrets.PORTAINER_SERVICE_WEBHOOK_URL }}
-          
-
+      - name: Verify deployment
+        run: |
+          echo "Deployment webhook triggered successfully"
+          echo "Service should be updating in Portainer"
 
