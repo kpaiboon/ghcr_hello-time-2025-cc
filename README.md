@@ -1,6 +1,7 @@
 # Curl command to test web api rest
 To run this web api use command:
 
+
     cargo run
 
 ## Get all
